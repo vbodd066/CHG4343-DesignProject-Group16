@@ -6,11 +6,13 @@ public class HeatExchanger_Geometry {
     private double dInner_Out;      // Outside diameter of inner pipe (meters)
     private double dOuter_In;       // Inside diameter of outer pipe (meters)
     private double k=45;            // Pipe wall thermal conductivity (W/m K)
+
+    // neither of these are used at the moment but will be important for when we want to implement the level 4 to get top grade
     private String configuration;   // "Parallel" or "Counter-Current"
     private String processStreamPlacement; // "Inner" (Process inside) or "Annulus" (Process in annulus)
 
     // Constructor method
-    public HeatExchanger_Geometry(int n, double l_Leg, double dInner_In, double dInner_Out, double dOuter_In, String Configuration, String processStreamPlacement) {
+    public HeatExchanger_Geometry(int n, double l_Leg, double dInner_In, double dInner_Out, double dOuter_In, String configuration, String processStreamPlacement) {
         this.n = n;
         this.l_Leg = l_Leg;
         this.dInner_In = dInner_In;
