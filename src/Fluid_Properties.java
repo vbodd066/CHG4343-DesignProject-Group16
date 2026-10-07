@@ -54,4 +54,19 @@ public class Fluid_Properties {
     public double Pr (){
         return (this.Cp * this.mu) / this.k ;
     }
+
+    // Setter method to change the mass flow rate for when NLE is used
+    public Boolean setM_Flow (double M_Flow_new){
+        boolean change_made = false;
+        if (M_Flow_new > 0){                // can change the error checking when we get to the NLE incorporation step
+            this.M_flow = M_Flow_new;       // set new M_Flow
+            change_made=true;               // Return true boolean to say we made the change
+        }
+        return change_made;                 // this executes if M_Flow_new fails the error check, returns false because we don't change
+    }
+
+
+
+
+
 }
