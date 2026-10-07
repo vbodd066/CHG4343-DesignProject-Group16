@@ -1,12 +1,12 @@
 public class Fluid_Properties {
 
-    private double mu;                 // Viscosity:
-    private double rho;                 // Density: kg/m^3
-    private double M_flow;              // Mass Flow In: kg/s
+    private double mu;                 // Viscosity: Pa * s
+    private double rho;                 // Density: kg / m^3
+    private double M_flow;              // Mass Flow In: kg / s
     private double T_in;                // Inlet Temperature: ºC
-    private double Cp;                  // Heat Capacity:
-    private double k;                   // Thermal Conductivity:
-    private double fouling_resistance;  // Fouling Resistance: m^2/W*K
+    private double Cp;                  // Heat Capacity: J / kg ºC
+    private double k;                   // Thermal Conductivity: W / m * K
+    private double fouling_resistance;  // Fouling Resistance: m^2 * K / W
 
 
     // constructor method
