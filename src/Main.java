@@ -61,7 +61,8 @@ public class Main {
         // Part 2 of deliverable 2:
 
         // create NLE_solver object with our baseCase exchanger
-        NLE_Solver targetProcessTemp = new NLE_Solver(baseCase,45,0.001,100);
+        boolean hotWaterInAnnulus = true;
+        NLE_Solver targetProcessTemp = new NLE_Solver(exchanger1,process,hotWater,hotWaterInAnnulus,45,0.001,100 );
 
         // use the setM_flow method from Fluid_Properties to change hot water flow rate
 
