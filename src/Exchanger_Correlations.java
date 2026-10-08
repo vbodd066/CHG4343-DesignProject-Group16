@@ -1,4 +1,4 @@
-public class HeatTransfer_Calculator {
+public class Exchanger_Correlations {
 
     //========================================================================================================
     //                                     Equations for Inner Pipe
@@ -73,4 +73,27 @@ public class HeatTransfer_Calculator {
     public static double Nu_annulus_turbulent (double f_a_annulus, double Re, double Pr, double k1, double f_length, double f_geom){
         return f_geom * f_length * (((f_a_annulus/8)*Re*Pr) / (k1 + (12.7 * (Math.pow(f_a_annulus/8,0.5)) * (Math.pow(Pr,0.66667)-1) )) ) ;
     }
+
+    //========================================================================================================
+    //                                    Equations for Pressure Drop
+    //========================================================================================================
+
+    public static double f_d_turbulent(double Re, double eps_r, double d){
+        return Math.pow(-1.8 * Math.log10(Math.pow(eps_r / (3.7 * d), 1.11) + 6.9 / Re), -2); }
+
+    public static double f_d_inner_laminar(double Re){
+        return 64 / Re; }
+
+    public static double f_d_annulus_laminar(double Re, double alpha){
+        return (64 / Re) * Math.pow(1 - alpha, 2)
+                / (1 + Math.pow(alpha, 2) + (1 - Math.pow(alpha, 2)) / Math.log(alpha)); }
+
+    public static double k_total(int n){
+        return 1.5 * (1 + n) + 2 * Math.max(0, n - 1); }
+
+    public static double delta_P(double f_d, double L, double d, double k_total, double rho, double v){
+        return (f_d * (L / d) + k_total) * rho * Math.pow(v, 2) / 2; }
+
+
+
 }

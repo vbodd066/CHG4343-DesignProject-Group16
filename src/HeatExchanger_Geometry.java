@@ -32,14 +32,14 @@ public class HeatExchanger_Geometry {
     }
 
     // Getter methods
-    public int n() { return this.n; }
-    public double l_Leg() { return this.l_Leg; }
-    public double dInner_In() { return this.dInner_In; }
-    public double dInner_Out() { return this.dInner_Out; }
-    public double dOuter_In() { return this.dOuter_In; }
-    public double k() { return this.k; }
-    public String configuration() { return this.configuration; }
-    public double eps_r() { return this.eps_r; }
+    public int getN() { return this.n; }
+    public double getL_Leg() { return this.l_Leg; }
+    public double getdInner_In() { return this.dInner_In; }
+    public double getdInner_Out() { return this.dInner_Out; }
+    public double getdOuter_In() { return this.dOuter_In; }
+    public double getK() { return this.k; }
+    public String getConfiguration() { return this.configuration; }
+    public double getEps_r() { return this.eps_r; }
 
     // Total straight leg length (m)
     public double lStraightTotal() {

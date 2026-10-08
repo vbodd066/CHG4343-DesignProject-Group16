@@ -33,14 +33,33 @@ public class Fluid_Properties {
     }
 
     //getter methods
-    public double mu(){ return this.mu; }
-    public double rho(){ return this.rho; }
-    public double M_flow(){ return this.M_flow; }
-    public double T_in(){ return this.T_in; }
-    public double Cp(){ return this.Cp; }
-    public double k(){ return this.k; }
-    public double fouling_resistance() { return this.fouling_resistance; }
-    public double C() { return (this.M_flow*this.Cp); }
+    public double getMu(){ return this.mu; }
+    public double getRho(){ return this.rho; }
+    public double getM_flow(){ return this.M_flow; }
+    public double getT_in(){ return this.T_in; }
+    public double getCp(){ return this.Cp; }
+    public double getK(){ return this.k; }
+    public double getFouling_resistance() { return this.fouling_resistance; }
+    public double getC() { return (this.M_flow*this.Cp); }
+
+    // Setter method to change the mass flow rate for when NLE is used
+    public Boolean setM_flow (double M_Flow_new){
+        boolean change_made = false;
+        if (M_Flow_new > 0){                // can change the error checking when we get to the NLE incorporation step
+            this.M_flow = M_Flow_new;       // set new M_Flow
+            change_made=true;               // Return true boolean to say we made the change
+        }
+        return change_made;                 // this executes if M_Flow_new fails the error check, returns false because we don't change
+    }
+
+
+
+
+
+
+
+
+
 
     // flow velocity (m/s)
     public double v(double area ){
@@ -49,22 +68,12 @@ public class Fluid_Properties {
 
     // Reynolds number (dimensionless)
     public double Re(double hydraulic_diameter, double flow_velocity){
-        return (this.rho * flow_velocity * hydraulic_diameter) / this.mu ;
-    }
+        return (this.rho * flow_velocity * hydraulic_diameter) / this.mu ; }
 
     // Prandtl number (dimensionless)
     public double Pr (){
         return (this.Cp * this.mu) / this.k ;
     }
 
-    // Setter method to change the mass flow rate for when NLE is used
-    public Boolean setM_Flow (double M_Flow_new){
-        boolean change_made = false;
-        if (M_Flow_new > 0){                // can change the error checking when we get to the NLE incorporation step
-            this.M_flow = M_Flow_new;       // set new M_Flow
-            change_made=true;               // Return true boolean to say we made the change
-        }
-        return change_made;                 // this executes if M_Flow_new fails the error check, returns false because we don't change
-    }
 
 }

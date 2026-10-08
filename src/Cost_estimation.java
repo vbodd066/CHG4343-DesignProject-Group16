@@ -30,14 +30,14 @@ public class Cost_estimation {
     // calculate annual cost
     public void calculate(){
         double[] del_P = this.exchanger.calculate_P();
-        Fluid_Properties inner = this.exchanger.Inner_Fluid();
-        Fluid_Properties annular = this.exchanger.Annular_Fluid();
+        Fluid_Properties inner = this.exchanger.getInner_Fluid();
+        Fluid_Properties annular = this.exchanger.getAnnular_Fluid();
 
-        this.p_electric_inner   = del_P[0] * (inner.M_flow()   / inner.rho())   / this.n_eff;
-        this.p_electric_annular = del_P[1] * (annular.M_flow() / annular.rho()) / this.n_eff;
+        this.p_electric_inner   = del_P[0] * (inner.getM_flow()   / inner.getRho())   / this.n_eff;
+        this.p_electric_annular = del_P[1] * (annular.getM_flow() / annular.getRho()) / this.n_eff;
         this.c_pump_inner = this.p_electric_inner / 1000 * this.h_year * e_price;
         this.c_pump_annular = this.p_electric_annular / 1000 * this.h_year * e_price;
-        this.c_capital_annual = this.exchanger.geometry().n() * 0.18 * this.c_module;
+        this.c_capital_annual = this.exchanger.getGeometry().getN() * 0.18 * this.c_module;
     }
 
     // calculate annual cost
