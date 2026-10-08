@@ -9,7 +9,6 @@ public class NLE_Solver {
     private double M_FLOW_MAX = 8;              // kg/s hotWater
     private double M_FLOW_MIN = 0.5;            // kg/s hotWater
 
-
     // constructor
     public NLE_Solver (HeatExchanger_Geometry geometry, Fluid_Properties process, Fluid_Properties hotWater, boolean hotWaterInAnnulus, double T_out_desired, double tolerance, int maxIterations) {
         if (geometry == null || process == null || hotWater == null) System.exit(0);
@@ -34,6 +33,9 @@ public class NLE_Solver {
         this.maxIterations = source.maxIterations;
     }
 
+    // getter methods
+    public double getT_out_desired(){ return this.T_out_desired; }
+
 
         //========================================================================================================
         //                                    NLE Solver Calculations
@@ -52,13 +54,10 @@ public class NLE_Solver {
             exchanger_i = new Complete_Exchanger(this.geometry,this.process,newHotWater);            // takes the geometry, and then inner fluid first, then the annular fluid second
         } else {
             exchanger_i = new Complete_Exchanger(this.geometry,newHotWater,this.process);            // takes the geometry, and then inner fluid first, then the annular fluid second
-        }
-         return exchanger_i.calculate_t_out(process,newHotWater)[0]; }                               // return the new outlet temperature with the new exchanger and hotWater mass flow rate
+        } return exchanger_i.calculate_t_out(process,newHotWater)[0]; }                              // return the new outlet temperature with the new exchanger and hotWater mass flow rate
 
     // helper method for finding roots
-    private double f_x(double M_flow_i){
-        return this.T_out_desired - calculate_T_outProcess(M_flow_i);
-    }
+    private double f_x(double M_flow_i){ return this.T_out_desired - calculate_T_outProcess(M_flow_i); }
 
     private double[] incremental_search (int n_intervals){
         double stepSize = (M_FLOW_MAX-M_FLOW_MIN)/n_intervals;
@@ -70,7 +69,6 @@ public class NLE_Solver {
                 return new double[] { M_FLOW_MIN + i * stepSize, M_FLOW_MIN + (i + 1) * stepSize };
             } f_lower = f_upper;                                // this version doesn't recalculate every value twice, once as an upper bound and again as a lower bound
         } return null; }                                        // if we make it to the end of the incremental search and don't find a root then there is a problem
-
 
     // Ridders' method to narrow in on the root until we are below the tolerance
     private double findM_flow(double[] root_interval){
@@ -84,6 +82,10 @@ public class NLE_Solver {
                 return (root[1]-root[0])/2; }
             i++; }                                          // if we are above tolerance, we increase i and go again
         return Double.NaN;                                  // hopefully we do not get to this point
+    }
+
+    public double[] calculateM_flow_required(){
+        return new double[] {17,23};
     }
 
 

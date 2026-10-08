@@ -18,6 +18,7 @@ public class Main {
         // kilograms per second.
 
         DecimalFormat df = new DecimalFormat("0.00"); // format decimals
+        DecimalFormat df_simple = new DecimalFormat("0"); // format decimals
 
         //========================================================================================================
         //              This is where the main code goes and we can organize all the print statements
@@ -50,8 +51,8 @@ public class Main {
         double[] del_P = baseCase.calculate_P();
         System.out.println(" ====================================================================");
         System.out.println("The total pressure drop across the heat exchanger is: ");
-        System.out.println("The Inner stream: " + df.format(del_P[0]) + " (Pa)");
-        System.out.println("The Annular stream: " + df.format(del_P[1]) + " (Pa)");
+        System.out.println("The Inner stream: " + df_simple.format(del_P[0]) + " (Pa)");
+        System.out.println("The Annular stream: " + df_simple.format(del_P[1]) + " (Pa)");
 
         // Calculate the costs
         double cost = price_baseCase.c_annual();
@@ -64,11 +65,12 @@ public class Main {
         boolean hotWaterInAnnulus = true;
         NLE_Solver targetProcessTemp = new NLE_Solver(exchanger1,process,hotWater,hotWaterInAnnulus,45,0.001,100 );
 
-        // use the setM_flow method from Fluid_Properties to change hot water flow rate
-
-        // calculate process stream outlet temperature, compare to target outlet temperature
-
-        // iterate until we find root
+        // find the required mass flow rate to acheive the outlet temperature
+        double[] M_flow_required = new double[2];
+        M_flow_required = targetProcessTemp.calculateM_flow_required();
+        System.out.println("====================================================================");
+        System.out.println(" The mass flow rate of hot water required to achieve a process ");
+        System.out.println(" stream outlet temperature of " + df_simple.format(targetProcessTemp.getT_out_desired()) +"ºC is: " + df.format(M_flow_required[0]) + " +/- " + df.format(M_flow_required[1]) + " (kg/s)");
 
 
 
