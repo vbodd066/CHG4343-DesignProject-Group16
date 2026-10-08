@@ -15,42 +15,19 @@ public class HeatTransfer_Calculator {
     }
 
     // Calculate Nusselt number
-    public static double Nu_inner (double Re, double Gz, double Pr, double f_0){
-        // laminar flow regime
-        if (Re <= 2300 && Pr <= 2000 && Pr >= 0.5) {
+    public static double Nu_inner_laminar (double Gz){
             return 3.66 + (0.0668 * Gz)/(1 + (0.04 * Math.pow(Gz,0.666667)));
         }
-        // turbulent flow regime
-        if (Re >= 10000 && Pr <= 2000 && Pr >= 0.5){
+    public static double Nu_inner_turbulent (double Re, double Pr, double f_0){
             return ((f_0 / 8) * (Re - 1000) * Pr) / ( 1 + 12.7 * (Math.pow((f_0/8),0.5)) * (Math.pow(Pr,0.6667) -1));
         }
 
-        // error handling if the Reynolds number is not cleanly in the laminar or turbulent regime
-        return Double.NaN;
-    }
-
-    // Calculate the Heat Transfer Coefficent ( W/m^2 K)
-    public static double h_i (double Nu, double k, double Diameter_Inner_Inside){
-        return (( Nu * k ) / Diameter_Inner_Inside ) ;
-    }
-
-
-
-
-
-
-
     //========================================================================================================
-    //                                    Equations for Annulus Region
+    //                                    Equations for Annular Region
     //========================================================================================================
 
-    // Calculate Alpha
-    public static double alpha (double D_inner_out, double D_outer_in){
-        return D_inner_out / D_outer_in ;
-    }
-
-    // Calculate Nusselt Number
-    public static double Nu_annulus (double alpha) {
+    // Calculate Nusselt Number for laminar flow
+    public static double Nu_annulus_laminar (double alpha) {
         // error check that alpha is within the range of the table
         if (alpha < 0.05 || alpha > 1.0) {
             return Double.NaN;
@@ -102,16 +79,9 @@ public class HeatTransfer_Calculator {
     }
 
     // calculate Nusselt number for turbulent flow
-    public static double Nu_annulus (double f_a_annulus, double Re, double Pr, double k1, double f_length, double f_geom){
+    public static double Nu_annulus_turbulent (double f_a_annulus, double Re, double Pr, double k1, double f_length, double f_geom){
         return f_geom * f_length * (((f_a_annulus/8)*Re*Pr) / (k1 + (12.7 * (Math.pow(f_a_annulus/8,0.5)) * (Math.pow(Pr,0.66667)-1) )) ) ;
     }
-
-    // Calculate the Heat Transfer Coefficent ( W/m^2 K)
-    public static double h_a (double Nu_annulus, double k_fluid_annulus, double d_h_a){
-        return ((Nu_annulus * k_fluid_annulus) / d_h_a) ;
-    }
-
-
 
 
 }

@@ -1,12 +1,13 @@
 public class Fluid_Properties {
 
-    private double mu;                 // Viscosity: Pa * s
-    private double rho;                 // Density: kg / m^3
-    private double M_flow;              // Mass Flow In: kg / s
-    private double T_in;                // Inlet Temperature: ºC
-    private double Cp;                  // Heat Capacity: J / kg ºC
-    private double k;                   // Thermal Conductivity: W / m * K
-    private double fouling_resistance;  // Fouling Resistance: m^2 * K / W
+    private double mu;                          // Viscosity: Pa * s
+    private double rho;                         // Density: kg / m^3
+    private double M_flow;                      // Mass Flow In: kg / s
+    private double T_in;                        // Inlet Temperature: ºC
+    private double Cp;                          // Heat Capacity: J / kg ºC
+    private double k;                           // Thermal Conductivity: W / m * K
+    private double fouling_resistance;          // Fouling Resistance: m^2 * K / W
+    private double C;   // Heat Capacity rate ( W / K)
 
 
     // constructor method
@@ -39,6 +40,7 @@ public class Fluid_Properties {
     public double Cp(){ return this.Cp; }
     public double k(){ return this.k; }
     public double fouling_resistance() { return this.fouling_resistance; }
+    public double C() { return (this.M_flow*this.Cp); }
 
     // flow velocity (m/s)
     public double v(double area ){

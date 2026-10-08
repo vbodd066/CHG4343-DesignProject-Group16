@@ -9,17 +9,15 @@ public class HeatExchanger_Geometry {
 
     // neither of these are used at the moment but will be important for when we want to implement the level 4 to get top grade
     private String configuration;   // "Parallel" or "Counter-Current"
-    private String processStreamPlacement; // "Inner" (Process inside) or "Annulus" (Process in annulus)
 
     // Constructor method
-    public HeatExchanger_Geometry(int n, double l_Leg, double dInner_In, double dInner_Out, double dOuter_In, String configuration, String processStreamPlacement) {
+    public HeatExchanger_Geometry(int n, double l_Leg, double dInner_In, double dInner_Out, double dOuter_In, String configuration) {
         this.n = n;
         this.l_Leg = l_Leg;
         this.dInner_In = dInner_In;
         this.dInner_Out = dInner_Out;
         this.dOuter_In = dOuter_In;
         this.configuration = configuration;
-        this.processStreamPlacement = processStreamPlacement;
     }
 
     // Copy constructor
@@ -30,7 +28,6 @@ public class HeatExchanger_Geometry {
         this.dInner_Out = source.dInner_Out;
         this.dOuter_In = source.dOuter_In;
         this.configuration = source.configuration;
-        this.processStreamPlacement = source.processStreamPlacement;
     }
 
     // Getter methods
@@ -41,7 +38,6 @@ public class HeatExchanger_Geometry {
     public double dOuter_In() { return this.dOuter_In; }
     public double k() { return this.k; }
     public String configuration() { return this.configuration; }
-    public String processStreamPlacement() { return this.processStreamPlacement; }
 
     // Total straight leg length (m)
     public double lStraightTotal() {
