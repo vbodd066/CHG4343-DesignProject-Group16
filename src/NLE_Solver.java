@@ -36,59 +36,55 @@ public class NLE_Solver {
 
 
         //========================================================================================================
-        //                                    NLE Algorithm Calculations
+        //                                    NLE Solver Calculations
         //========================================================================================================
 
-    // each incremental search or ridders method, we can simply create a new object, when we define the fluid properties, we can change the M_flow, then pass the other fluid, geometry, and create a new complete exchanger to calculate T out
-    // then do T_out_M_flow (ie the new T out from our new object) - T_out_target, when this changes sign, we have a root
-    // then we can use ridders to narrow down, again creating new objects for each iteration
-
-    // calculates the new outlet temperature of the process stream for a given Mass Flow rate of Water
+    // calculates the new outlet temperature of the process stream for a given mass flow rate of hotWater
     // this uses the code from part 1 to calculate the process outlet temperature so we complete that requirement
     private double calculate_T_outProcess(double M_flow_hotWater){
-        Fluid_Properties newHotWater = new Fluid_Properties(this.hotWater);                         // create a new hotWater stream
+        Fluid_Properties newHotWater = new Fluid_Properties(this.hotWater);                          // create a new hotWater stream using the copy constructor
         if (M_flow_hotWater > M_FLOW_MAX || M_flow_hotWater < M_FLOW_MIN) {
             System.out.println("Invalid hot water flow rate entered: " + M_flow_hotWater + " kg/s");
-            System.exit(0);                 // set the new Mass flow rate, this returns a boolean so we need to exit if its false because that means the change failed
-        }
-        newHotWater.setM_flow(M_flow_hotWater);
-        Complete_Exchanger exchanger_i;
-        // check if HotWater stream is the Inner or Annulus
-        if (this.hotWaterInAnnulus ){
-            // this code only executes if hotWaterInAnnulus == true
+            System.exit(0); }
+        newHotWater.setM_flow(M_flow_hotWater);                                                      // set the new mass flow rate for hotWater
+        Complete_Exchanger exchanger_i;                                                              // creates a new Complete_exchanger object
+        if (this.hotWaterInAnnulus ){                                                                // check if HotWater stream is the Inner or Annulus
             exchanger_i = new Complete_Exchanger(this.geometry,this.process,newHotWater);            // takes the geometry, and then inner fluid first, then the annular fluid second
-        }
-        else {
-            // this code only executes if hotWaterInAnnulus == false
+        } else {
             exchanger_i = new Complete_Exchanger(this.geometry,newHotWater,this.process);            // takes the geometry, and then inner fluid first, then the annular fluid second
         }
-        // exchanger object with new mass flow of hot water, then we calculate T_out, which returns an array of temperatures with process stream at position [0]
-         return exchanger_i.calculate_t_out(process,newHotWater)[0];
-        // returns new outlet temperature of process stream
+         return exchanger_i.calculate_t_out(process,newHotWater)[0]; }                               // return the new outlet temperature with the new exchanger and hotWater mass flow rate
+
+    // helper method for finding roots
+    private double f_x(double M_flow_i){
+        return this.T_out_desired - calculate_T_outProcess(M_flow_i);
     }
 
     private double[] incremental_search (int n_intervals){
-        double[] root_interval = new double[2];
         double stepSize = (M_FLOW_MAX-M_FLOW_MIN)/n_intervals;
         // incremental search loop
-        for (int i=0;i<n_intervals+1;i++){
-            // add a return statement once we find the interval that bounds the root
-            return root_interval;
-        }
-        return null;            // if we make it to the end of the incremental search and don't find a root then there is a problem
-    }
+        double f_lower = f_x(M_FLOW_MIN);
+        for (int i = 0; i < n_intervals; i++) {
+            double f_upper = f_x(M_FLOW_MIN + (i + 1) * stepSize);
+            if (f_lower * f_upper <= 0){                         // this version also doesn't create an extra array beforehand, it just returns the two values
+                return new double[] { M_FLOW_MIN + i * stepSize, M_FLOW_MIN + (i + 1) * stepSize };
+            } f_lower = f_upper;                                // this version doesn't recalculate every value twice, once as an upper bound and again as a lower bound
+        } return null; }                                        // if we make it to the end of the incremental search and don't find a root then there is a problem
+
 
     // Ridders' method to narrow in on the root until we are below the tolerance
-    private double findM_flow(double[] root){
-        int i = 0;                  // start at iteration number 0, go until we get below the tolerance or hit 100 iterations
-        double error=1;             // random number for the error to start at so that it's above the tolerance, and we enter the while loop
-        while (i<maxIterations && error > tolerance){
+    private double findM_flow(double[] root_interval){
+        int i = 0;
+        double[] root = new double[] {f_x(root_interval[0]),f_x(root_interval[1])};     // intialize root boundaries for ridders
+        while (i<maxIterations){
 
 
 
-            i++;
-        }
-        return i;
+            if ((root[1]-root[0])/2 < tolerance){           // exit condition when error < tolerance
+                return (root[1]-root[0])/2; }
+            i++; }                                          // if we are above tolerance, we increase i and go again
+        return Double.NaN;                                  // hopefully we do not get to this point
     }
+
 
 }
