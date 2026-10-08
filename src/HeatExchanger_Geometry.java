@@ -41,6 +41,18 @@ public class HeatExchanger_Geometry {
     public String getConfiguration() { return this.configuration; }
     public double getEps_r() { return this.eps_r; }
 
+
+
+
+
+
+
+
+    //========================================================================================================
+    //                                    Exchanger Geometry Calculations
+    //========================================================================================================
+
+
     // Total straight leg length (m)
     public double lStraightTotal() {
         return 2 * this.n * this.l_Leg;

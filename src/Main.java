@@ -23,22 +23,24 @@ public class Main {
         //              This is where the main code goes and we can organize all the print statements
         //========================================================================================================
 
+        // Part 1 of deliverable 2:
+
         // Define the fluid properties for both streams and the geometry of the heat exchanger
-        Fluid_Properties Process = new Fluid_Properties(0.00164, 1040, 2.5, 25, 3600, 0.44,0.0002);
-        Fluid_Properties HotWater = new Fluid_Properties(0.00038, 975, 2.0, 90, 4200, 0.66,0.0001 );
+        Fluid_Properties process = new Fluid_Properties(0.00164, 1040, 2.5, 25, 3600, 0.44,0.0002);
+        Fluid_Properties hotWater = new Fluid_Properties(0.00038, 975, 2.0, 90, 4200, 0.66,0.0001 );
         HeatExchanger_Geometry exchanger1 = new HeatExchanger_Geometry(3,6,0.053,0.06,0.102,"Counter-Current");
 
         // Create out exchanger for the desired base case
-        Complete_Exchanger baseCase = new Complete_Exchanger(exchanger1,Process,HotWater);
-        Cost_estimation pricing = new Cost_estimation(baseCase, 1000);
+        Complete_Exchanger baseCase = new Complete_Exchanger(exchanger1,process,hotWater);
+        Cost_estimation price_baseCase = new Cost_estimation(baseCase, 1000);
 
         // Calculate Heat Transfer rate
-        double q = baseCase.calculate_q(Process,HotWater);
+        double q = baseCase.calculate_q(process,hotWater);
         System.out.println("====================================================================");
         System.out.println(" Base Case: The Heat Transfer Rate (q) is: " + df.format(q) + " (W)");
 
         // Find the outlet temperatures for both streams
-        double[] t_out = baseCase.calculate_t_out(Process,HotWater);
+        double[] t_out = baseCase.calculate_t_out(process,hotWater);
         System.out.println("====================================================================");
         System.out.println(" The outlet temperatures from the heat exchanger are: ");
         System.out.println(" Process Stream: " + df.format(t_out[0]) + " (ºC)");
@@ -52,12 +54,20 @@ public class Main {
         System.out.println("The Annular stream: " + df.format(del_P[1]) + " (Pa)");
 
         // Calculate the costs
-        double cost = pricing.c_annual();
+        double cost = price_baseCase.c_annual();
         System.out.println("====================================================================");
         System.out.println(" Base Case: total annual cost is: " + df.format(cost) + " ($ CAD)");
 
+        // Part 2 of deliverable 2:
 
+        // create NLE_solver object with our baseCase exchanger
+        NLE_Solver targetProcessTemp = new NLE_Solver(baseCase,45,0.001,100);
 
+        // use the setM_flow method from Fluid_Properties to change hot water flow rate
+
+        // calculate process stream outlet temperature, compare to target outlet temperature
+
+        // iterate until we find root
 
 
 

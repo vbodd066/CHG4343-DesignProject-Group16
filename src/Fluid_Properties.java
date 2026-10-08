@@ -52,6 +52,7 @@ public class Fluid_Properties {
         return change_made;                 // this executes if M_Flow_new fails the error check, returns false because we don't change
     }
 
+    // do we need equals method? I don't think we have a use for either but DT always says to make them with any new class
 
 
 
@@ -60,6 +61,9 @@ public class Fluid_Properties {
 
 
 
+    //========================================================================================================
+    //                                    Fluid Property Calculations
+    //========================================================================================================
 
     // flow velocity (m/s)
     public double v(double area ){

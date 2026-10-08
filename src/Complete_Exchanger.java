@@ -39,7 +39,7 @@ public class Complete_Exchanger {
     public Fluid_Properties getAnnular_Fluid() { return new Fluid_Properties(this.Annular_Fluid); }
     public HeatExchanger_Geometry getGeometry() { return new HeatExchanger_Geometry(this.geometry); }
 
-
+    // do we need equals methods? - I don't think we have a use for either but DT always says to make them with any new class
 
 
 
@@ -47,7 +47,7 @@ public class Complete_Exchanger {
 
 
     //========================================================================================================
-    //                                    Heat Transfer Calculation
+    //                                    Heat Transfer Calculations
     //========================================================================================================
 
     public double calculate_u_0 () {

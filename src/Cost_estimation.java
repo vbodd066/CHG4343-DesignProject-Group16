@@ -19,13 +19,26 @@ public class Cost_estimation {
         this.calculate();
     }
 
-    // copy constructor to make Sir Professor Honourable Genius Mr. DT happy!!!!! (DT = David Taylor)
+    // copy constructor
     public Cost_estimation (Cost_estimation source){
         if (source == null) System.exit(0);
         this.exchanger = new Complete_Exchanger(source.exchanger);
         this.c_module = source.c_module;
         this.calculate();
     }
+
+
+    // do we need getter methods?
+
+    // do we need equals methods? - I don't think we have a use for either but DT always says to make them with any new class
+
+
+
+
+
+    //========================================================================================================
+    //                                    Price Estimation Calculations
+    //========================================================================================================
 
     // calculate annual cost
     public void calculate(){
