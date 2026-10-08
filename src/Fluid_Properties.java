@@ -67,8 +67,4 @@ public class Fluid_Properties {
         return change_made;                 // this executes if M_Flow_new fails the error check, returns false because we don't change
     }
 
-
-
-
-
 }

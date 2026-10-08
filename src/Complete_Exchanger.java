@@ -1,10 +1,8 @@
 public class Complete_Exchanger {
-
     // configuration of exchanger
     private HeatExchanger_Geometry geometry;
     private Fluid_Properties Inner_Fluid;
     private Fluid_Properties Annular_Fluid;
-
     // result for this specific exchanger
     private double C_min;
     private double C_max;
@@ -176,6 +174,7 @@ public class Complete_Exchanger {
             System.exit(0);
             return null;
         }
+
         // compute the pressure drop for the inner stream
         del_P[0] = (f_d_inner * (this.geometry.lStraightTotal()
                 / this.geometry.dInner_In()) + k_total) * (this.Inner_Fluid.rho()*

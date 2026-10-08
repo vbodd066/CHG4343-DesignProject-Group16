@@ -56,8 +56,6 @@ public class Main {
         System.out.println("====================================================================");
         System.out.println(" Base Case: total annual cost is: " + df.format(cost) + " ($ CAD)");
 
-        // this script gets t_out and del_P as arrays where the first index is the Inner stream, and the second index is the Annular stream, if you swap the process and hot water then the print statements will no longer be correct
-
 
 
 
