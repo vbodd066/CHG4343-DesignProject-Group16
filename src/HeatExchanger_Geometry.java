@@ -1,11 +1,12 @@
 public class HeatExchanger_Geometry {
 
-    private int n;                  // Number of hairpin modules
-    private double l_Leg;           // Length of one straight leg (meters)
-    private double dInner_In;       // Inside diameter of inner pipe (meters)
-    private double dInner_Out;      // Outside diameter of inner pipe (meters)
-    private double dOuter_In;       // Inside diameter of outer pipe (meters)
-    private double k=45;            // Pipe wall thermal conductivity (W/m K)
+    private int n;                      // Number of hairpin modules
+    private double l_Leg;               // Length of one straight leg (meters)
+    private double dInner_In;           // Inside diameter of inner pipe (meters)
+    private double dInner_Out;          // Outside diameter of inner pipe (meters)
+    private double dOuter_In;           // Inside diameter of outer pipe (meters)
+    private double k=45;                // Pipe wall thermal conductivity (W/m K)
+    private double eps_r = 0.000045;    //
 
     // neither of these are used at the moment but will be important for when we want to implement the level 4 to get top grade
     private String configuration;   // "Parallel" or "Counter-Current"
@@ -38,6 +39,7 @@ public class HeatExchanger_Geometry {
     public double dOuter_In() { return this.dOuter_In; }
     public double k() { return this.k; }
     public String configuration() { return this.configuration; }
+    public double eps_r() { return this.eps_r; }
 
     // Total straight leg length (m)
     public double lStraightTotal() {

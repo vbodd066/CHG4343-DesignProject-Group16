@@ -1,0 +1,47 @@
+public class Cost_estimation {
+    private double n_eff = 0.7;                         // pump efficiency
+    private double h_year = 8000;                       // annual operating time: (hours)
+    private double e_price = 0.12;                      // electricity price ($/kW hour)
+    private Complete_Exchanger exchanger;               // local instance of the exchanger
+    private double p_electric_inner;                    // process pump electrical power (W)
+    private double p_electric_annular;                  // hot water pump electrical power (W)
+    private double c_pump_inner;                        // annual pumping costs - process stream ($/Yr)
+    private double c_pump_annular;                      // annual pumping costs - hot water stream($/Yr)
+    private double c_capital_annual;                    // annualised capital costs ($/Yr)
+    private double c_module;                            // installed cost of one module in $
+
+    // constructor method
+    public Cost_estimation (Complete_Exchanger exchanger, double c_module){
+        if (exchanger == null) System.exit(0);
+        if (c_module < 0) System.exit(0);
+        this.exchanger = new Complete_Exchanger(exchanger); // copy constructor of the exchanger that we pass in to create the cost_estimation object
+        this.c_module = c_module;
+        this.calculate();
+    }
+
+    // copy constructor to make Sir Professor Honourable Genius Mr. DT happy!!!!! (DT = David Taylor)
+    public Cost_estimation (Cost_estimation source){
+        if (source == null) System.exit(0);
+        this.exchanger = new Complete_Exchanger(source.exchanger);
+        this.c_module = source.c_module;
+        this.calculate();
+    }
+
+    // calculate annual cost
+    public void calculate(){
+        double[] del_P = this.exchanger.calculate_P();
+        Fluid_Properties inner = this.exchanger.Inner_Fluid();
+        Fluid_Properties annular = this.exchanger.Annular_Fluid();
+
+        this.p_electric_inner   = del_P[0] * (inner.M_flow()   / inner.rho())   / this.n_eff;
+        this.p_electric_annular = del_P[1] * (annular.M_flow() / annular.rho()) / this.n_eff;
+        this.c_pump_inner = this.p_electric_inner / 1000 * this.h_year * e_price;
+        this.c_pump_annular = this.p_electric_annular / 1000 * this.h_year * e_price;
+        this.c_capital_annual = this.exchanger.geometry().n() * 0.18 * this.c_module;
+    }
+
+    // calculate annual cost
+    public double c_annual(){
+        return c_pump_annular + c_pump_inner + c_capital_annual ;
+    }
+}

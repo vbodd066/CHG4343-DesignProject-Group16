@@ -30,26 +30,33 @@ public class Main {
 
         // Create out exchanger for the desired base case
         Complete_Exchanger baseCase = new Complete_Exchanger(exchanger1,Process,HotWater);
+        Cost_estimation pricing = new Cost_estimation(baseCase, 1000);
 
         // Calculate Heat Transfer rate
         double q = baseCase.calculate_q(Process,HotWater);
-        System.out.println(" ====================================================================  ");
-        System.out.println("Base Case: The Heat Transfer Rate (q) is: " + df.format(q) + " W");
+        System.out.println("====================================================================");
+        System.out.println(" Base Case: The Heat Transfer Rate (q) is: " + df.format(q) + " (W)");
 
         // Find the outlet temperatures for both streams
         double[] t_out = baseCase.calculate_t_out(Process,HotWater);
-        System.out.println(" ====================================================================  ");
-        System.out.println("The outlet temperatures from the heat exchanger are: ");
-        System.out.println("Process Stream: " + df.format(t_out[0]) + " (ºC)");
-        System.out.println("Hot Water Stream: " + df.format(t_out[1]) + " (ºC)");
+        System.out.println("====================================================================");
+        System.out.println(" The outlet temperatures from the heat exchanger are: ");
+        System.out.println(" Process Stream: " + df.format(t_out[0]) + " (ºC)");
+        System.out.println(" Hot Water Stream: " + df.format(t_out[1]) + " (ºC)");
 
         // Calculate pressure drop
-        double del_P = baseCase.calculate_P();
-        System.out.println(" ====================================================================  ");
-        System.out.println(" The total pressure drop across the heat exchanger is: " + del_P + " Pa");
+        double[] del_P = baseCase.calculate_P();
+        System.out.println(" ====================================================================");
+        System.out.println("The total pressure drop across the heat exchanger is: ");
+        System.out.println("The Inner stream: " + df.format(del_P[0]) + " (Pa)");
+        System.out.println("The Annular stream: " + df.format(del_P[1]) + " (Pa)");
+
         // Calculate the costs
+        double cost = pricing.c_annual();
+        System.out.println("====================================================================");
+        System.out.println(" Base Case: total annual cost is: " + df.format(cost) + " ($ CAD)");
 
-
+        // this script gets t_out and del_P as arrays where the first index is the Inner stream, and the second index is the Annular stream, if you swap the process and hot water then the print statements will no longer be correct
 
 
 

@@ -12,6 +12,11 @@ public class Complete_Exchanger {
     private double u_0;
     private double NTU;
     private double eps;
+    double v_annular;
+    double Re_annular;
+    double v_inner;
+    double Re_inner;
+    double alpha;
 
     // constructor
     public Complete_Exchanger (HeatExchanger_Geometry geometry, Fluid_Properties Inner_Fluid, Fluid_Properties Annular_Fluid){
@@ -24,7 +29,7 @@ public class Complete_Exchanger {
         this.calculate();       // calling this completes all the calculations to set all the instance variables
     }
 
-    // copy constructor to make Sir Professor Honourable Genius Mr. DT happy!!!!! (DT = David Taylor)
+    // copy constructor
     public Complete_Exchanger (Complete_Exchanger source) {
         if (source == null) System.exit(0);
         this.geometry = new HeatExchanger_Geometry(source.geometry);
@@ -33,16 +38,17 @@ public class Complete_Exchanger {
         this.calculate();       // calling this completes all the calculations to set all the instance variables
     }
 
+    // getter
+    public Fluid_Properties Inner_Fluid()   { return new Fluid_Properties(this.Inner_Fluid); }
+    public Fluid_Properties Annular_Fluid() { return new Fluid_Properties(this.Annular_Fluid); }
+    public HeatExchanger_Geometry geometry() { return new HeatExchanger_Geometry(this.geometry); }
+
+
     public double calculate_u_0 () {
         // independent of flow regime
-        double v_inner = this.Inner_Fluid.v(this.geometry.a_I());
-        double Re_inner = this.Inner_Fluid.Re(this.geometry.dInner_In(), v_inner);
         double Pr_inner = this.Inner_Fluid.Pr();
         double r_foul_i = (this.geometry.dInner_Out() * this.Inner_Fluid.fouling_resistance()) / this.geometry.dInner_In();
         double r_foul_a = this.Annular_Fluid.fouling_resistance();
-        double alpha = this.geometry.dInner_Out() / this.geometry.dOuter_In();
-        double v_annular = this.Annular_Fluid.v(this.geometry.a_A());
-        double Re_annular = this.Annular_Fluid.Re(this.geometry.d_Ha(), v_annular);
         double Pr_annular = this.Annular_Fluid.Pr();
         double r_wall = (this.geometry.dInner_Out() * Math.log((this.geometry.dInner_Out() / this.geometry.dInner_In()))) / (2 * this.geometry.k());
 
@@ -105,7 +111,11 @@ public class Complete_Exchanger {
     // call this method within the constructor, then it will calculate everything you need to solve for q when the object is created
     private void calculate(){
         // void return type because we just want to set the values for the instance variables, we are not returning anything from this method
-        this.C_min = Math.min(this.Inner_Fluid.C(), this.Annular_Fluid.C());
+        this.v_annular = this.Annular_Fluid.v(this.geometry.a_A());
+        this.Re_annular = this.Annular_Fluid.Re(this.geometry.d_Ha(), v_annular);
+        this.v_inner = this.Inner_Fluid.v(this.geometry.a_I());
+        this.Re_inner = this.Inner_Fluid.Re(this.geometry.dInner_In(), v_inner);
+        this.alpha = this.geometry.dInner_Out() / this.geometry.dOuter_In();this.C_min = Math.min(this.Inner_Fluid.C(), this.Annular_Fluid.C());
         this.C_max = Math.max(this.Inner_Fluid.C(), this.Annular_Fluid.C());
         this.C_r = this.C_min / this.C_max;
         this.u_0 = this.calculate_u_0();
@@ -129,16 +139,54 @@ public class Complete_Exchanger {
         return t_out;
     }
 
-    // public double calculate_P(){
-            
-    // }
-
-
 
 
     //========================================================================================================
-    //                                     Cost Estimation Methods
+    //                                    Pressure Drop Calculation
     //========================================================================================================
+
+    public double[] calculate_P(){
+        // returns an array of doubles,
+        // del_p[0] = inner pressure drop
+        // del_p[1] = annular stream pressure drop
+        double[] del_P = new double[2];
+        double k_total = (1.5 * (1+this.geometry.n())) + (2 * Math.max(0, this.geometry.n()-1));
+
+        double f_d_inner;                       // check the flow regime
+        if (Re_inner <= 2300) {                 // laminar flow, use this equation
+            f_d_inner = 64 / Re_inner;
+        } else if (Re_inner >= 10000) {         // turbulent flow, use this equation
+            f_d_inner = Math.pow((-1.8*Math.log10((Math.pow((this.geometry.eps_r()
+                    /(3.7 * this.geometry.dInner_In())),1.11)) + (6.9/Re_inner))),-2);
+        } else {                                // transition regime, exit and print error
+            System.out.println("Error: inner flow is in the transition regime (Re = " + Re_inner + ")");
+            System.exit(0);
+        return null;
+        }
+
+        double f_d_annular;
+        if (Re_annular <= 2300) {                 // laminar flow, use this equation
+            f_d_annular = (64/Re_annular) * (Math.pow((1-alpha),2))
+                    /(1 + Math.pow(alpha,2) + (1 - Math.pow(alpha,2))/(Math.log(alpha)));
+        } else if (Re_annular >= 10000) {         // turbulent flow, use this equation
+            f_d_annular = Math.pow((-1.8*Math.log10((Math.pow((this.geometry.eps_r()
+                    /(3.7 * this.geometry.d_Ha())),1.11)) + (6.9/Re_annular))),-2);
+        } else {                                  // transition regime, exit and print error
+            System.out.println("Error: annular flow is in the transition regime (Re = " + Re_annular + ")");
+            System.exit(0);
+            return null;
+        }
+        // compute the pressure drop for the inner stream
+        del_P[0] = (f_d_inner * (this.geometry.lStraightTotal()
+                / this.geometry.dInner_In()) + k_total) * (this.Inner_Fluid.rho()*
+                Math.pow(this.Inner_Fluid.v(this.geometry.a_I()),2)) / 2 ;
+        // compute the pressure drop for the outer stream
+        del_P[1] = (f_d_annular * (this.geometry.lStraightTotal()
+                / this.geometry.d_Ha()) + k_total) * (this.Annular_Fluid.rho()*
+                Math.pow(this.Annular_Fluid.v(this.geometry.a_A()),2)) / 2 ;
+        // return both pressure drops as the array
+        return del_P;
+    }
 
 
 }
