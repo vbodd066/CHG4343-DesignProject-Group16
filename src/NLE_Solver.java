@@ -80,7 +80,7 @@ public class NLE_Solver {
             double x3 = x1 + ((x1 - xa)*(((Math.signum(f_x(xa)-f_x(xb)))*f_x(x1))/(Math.sqrt((f_x(x1) * f_x(x1))-(f_x(xa)*f_x(xb))))));
 
             // check if we found the root
-            if ( Math.abs(f_x(x3)) < tolerance){                                                        // exit condition when absolute residual error < tolerance
+            if ( Math.abs(f_x(x3)) <= tolerance){                                                       // exit condition when absolute residual error <= tolerance
                 return new double[]{x3, Math.max(x3 - xa, xb - x3)}; }                                  // return the M_flow and the +/- error (pessimistic approach, max distance from x3 to either bound - often overstates the error as larger than it really is but this is the safest approach)
 
             // if we did not find root, apply ridders method again
@@ -103,11 +103,12 @@ public class NLE_Solver {
 
             // update the iteration and try again
             i++; }
-            // this is not a memory efficient way of doing it, we call f_x function many times and it creates a new complete_exchanger object every single time, we can call f_x 4 times, then store the values for that iteration to make it more memory efficient
+            // this is not a memory efficient way of doing it, we call f_x function many times, and it creates a new complete_exchanger object every single time, we can call f_x 4 times, then store the values for that iteration to make it more memory efficient
         return null; }                                                                                  // hopefully we do not get to this point, means we went over maxIterations
 
     public double[] calculateM_flow_required(){
-        return findM_flow(incremental_search(10)); }                                                                  // return the M_flow_hotWater in [0] and the error in [1]
-
+        double[] bracket = incremental_search(10);
+        if (bracket == null) return null;                                                               // no root found from incremental search in 0.5–8 kg/s
+        return findM_flow(bracket); }                                                                   // return the M_flow_hotWater in [0] and the error in [1], returns null if no root found in ridders method
 
 }

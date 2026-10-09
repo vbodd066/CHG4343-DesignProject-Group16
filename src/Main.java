@@ -49,7 +49,7 @@ public class Main {
 
         // Calculate pressure drop
         double[] del_P = baseCase.calculate_P();
-        System.out.println(" ====================================================================");
+        System.out.println("====================================================================");
         System.out.println("The total pressure drop across the heat exchanger is: ");
         System.out.println("The Inner stream: " + df_simple.format(del_P[0]) + " (Pa)");
         System.out.println("The Annular stream: " + df_simple.format(del_P[1]) + " (Pa)");
@@ -68,9 +68,16 @@ public class Main {
         // find the required mass flow rate to acheive the outlet temperature
         double[] M_flow_required = new double[2];
         M_flow_required = targetProcessTemp.calculateM_flow_required();
-        System.out.println("====================================================================");
-        System.out.println(" The mass flow rate of hot water required to achieve a process ");
-        System.out.println(" stream outlet temperature of " + df_simple.format(targetProcessTemp.getT_out_desired()) +"ºC is: " + df.format(M_flow_required[0]) + "+/-" + df.format(M_flow_required[1]) + " (kg/s)");
+        if (M_flow_required == null){
+            System.out.println("====================================================================");
+            System.out.println(" A hot water mass flow rate could not be found within the bounds to ");
+            System.out.println(" satisfy the process stream outlet temperature of " + df_simple.format(targetProcessTemp.getT_out_desired()) + "ºC.");
+        }
+        else {
+            System.out.println("====================================================================");
+            System.out.println(" The mass flow rate of hot water required to achieve a process ");
+            System.out.println(" stream outlet temperature of " + df_simple.format(targetProcessTemp.getT_out_desired()) +"ºC is: " + df.format(M_flow_required[0]) + "+/-" + df.format(M_flow_required[1]) + " (kg/s)");
+        }
 
 
 
