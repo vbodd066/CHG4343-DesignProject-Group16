@@ -70,7 +70,7 @@ public class Main {
         M_flow_required = targetProcessTemp.calculateM_flow_required();
         System.out.println("====================================================================");
         System.out.println(" The mass flow rate of hot water required to achieve a process ");
-        System.out.println(" stream outlet temperature of " + df_simple.format(targetProcessTemp.getT_out_desired()) +"ºC is: " + df.format(M_flow_required[0]) + " +/- " + df.format(M_flow_required[1]) + " (kg/s)");
+        System.out.println(" stream outlet temperature of " + df_simple.format(targetProcessTemp.getT_out_desired()) +"ºC is: " + df.format(M_flow_required[0]) + "+/-" + df.format(M_flow_required[1]) + " (kg/s)");
 
 
 
