@@ -46,6 +46,90 @@ public class Complete_Exchanger {
 
 
 
+
+    //========================================================================================================
+    //                                     Equations for Inner Pipe
+    //========================================================================================================
+
+    // laminar equations
+    // Calculate Graetz number for laminar flow
+    public static double Gz_inner (double Re, double Pr, double Diameter_Inner_Inside, double l_straight_total){
+        return ( Re * Pr * Diameter_Inner_Inside ) / l_straight_total;
+    }
+    // Calculate Nusselt number
+    public static double Nu_inner_laminar (double Gz){
+        return 3.66 + (0.0668 * Gz)/(1 + (0.04 * Math.pow(Gz,0.666667)));}
+
+    // turbulent equations
+    // calculate smooth pipe friction factor for turbulent heat transfer rate
+    public static double f_0_inner (double Re){
+        return Math.pow((-1.8*Math.log10(6.9 / Re )),-2);
+    }
+
+    public static double Nu_inner_turbulent (double Re, double Pr, double f_0){
+        return ((f_0 / 8) * (Re - 1000) * Pr) / ( 1 + 12.7 * (Math.pow((f_0/8),0.5)) * (Math.pow(Pr,0.6667) -1));}
+
+
+
+
+
+    //========================================================================================================
+    //                                    Equations for Annular Region
+    //========================================================================================================
+    // laminar equations
+    // Calculate Nusselt Number for laminar flow
+    public static double Nu_annulus_laminar (double alpha) {
+        // error check that alpha is within the range of the table
+        if (alpha < 0.05 || alpha > 1.0) return Double.NaN;
+        // hard code the table so that we can interpolate
+        double[] alphaTable = {0.05, 0.10, 0.25, 0.50, 1.00};
+        double[] nuTable    = {17.46, 11.56, 7.37, 5.74, 4.86};
+        for (int i = 0; i < alphaTable.length - 1; i++) {
+            if (alpha >= alphaTable[i] && alpha <= alphaTable[i + 1]) { // starts at 0.05, if alpha is > and < 0.10, then use these values
+                double alpha_1 = alphaTable[i];                         // otherwise go to next alpha, stops at alphaTable.length-1 because there is no value in i+1 position at alpha = 1 since it's the end of the table
+                double alpha_2 = alphaTable[i + 1];
+                double Nu_a1 = nuTable[i];
+                double Nu_a2 = nuTable[i + 1];
+                return Nu_a1 + (((alpha - alpha_1) / (alpha_2 - alpha_1)) * (Nu_a2 - Nu_a1));   // this equation handles if alpha = a value in the table, it will return that value
+            }
+        }
+        return Double.NaN;      // code should never get here because we should always find an alpha within the for loop
+        // and then return, but java requires a return statement at the end of the method
+    }
+
+
+    // turbulent equations
+    // Calculate Modified Reynolds Number
+    public static double Re_a_star(double Re_a, double alpha){
+        return Re_a * ((((1 + Math.pow(alpha,2)) * Math.log(alpha) ) + (1 - Math.pow(alpha,2)))
+                / (Math.pow((1 - alpha),2) * Math.log(alpha) ));
+    }
+    // calculate friction factor
+    public static double f_a_annulus (double Re_modified){
+        return Math.pow(((1.8 * Math.log10(Re_modified)) - 1.5),-2);
+    }
+    // calculate correction term k1
+    public static double k1_annulus(double Re_a, double Pr){
+        return 1.07 + ( 900 / Re_a ) - ( 0.63 / (1 + 10 * Pr) );
+    }
+    // calculate geometry correction factor
+    public static double f_geom(double alpha){
+        return 0.75 * Math.pow(alpha,-0.17);
+    }
+    // calculate length correction factor
+    public static double f_length (double d_h_a, double l_straight_total){
+        return 1 + Math.pow( ( d_h_a / l_straight_total ) , 0.666667 );
+    }
+    // calculate Nusselt number for turbulent flow
+    public static double Nu_annulus_turbulent (double f_a_annulus, double Re, double Pr, double k1, double f_length, double f_geom){
+        return f_geom * f_length * (((f_a_annulus/8)*Re*Pr) / (k1 + (12.7 * (Math.pow(f_a_annulus/8,0.5)) * (Math.pow(Pr,0.66667)-1) )) ) ;
+    }
+
+
+
+
+
+
     //========================================================================================================
     //                                    Heat Transfer Calculations
     //========================================================================================================
@@ -61,27 +145,27 @@ public class Complete_Exchanger {
         // calculate Nu according to the flow regime for the Inner pipe
         double Nu_inner;
         if (Re_inner <= 2300) {                 // laminar
-            double Gz_inner = Exchanger_Correlations.Gz_inner(Re_inner, Pr_inner, this.geometry.getdInner_In(), this.geometry.lStraightTotal());
-            Nu_inner = Exchanger_Correlations.Nu_inner_laminar(Gz_inner);
+            double Gz_inner = Gz_inner(Re_inner, Pr_inner, this.geometry.getdInner_In(), this.geometry.lStraightTotal());
+            Nu_inner = Nu_inner_laminar(Gz_inner);
         } else if (Re_inner >= 10000) {         // turbulent
-            double f_0 = Exchanger_Correlations.f_0_inner(Re_inner);
-            Nu_inner = Exchanger_Correlations.Nu_inner_turbulent(Re_inner, Pr_inner, f_0);
+            double f_0 = f_0_inner(Re_inner);
+            Nu_inner = Nu_inner_turbulent(Re_inner, Pr_inner, f_0);
         } else {                                // transition
             System.out.println("Error: inner flow is in the transition regime (Re = " + Re_inner + ")");
             System.exit(0);
-            return Double.NaN;   // never runs, but Java needs it or it says Nu_inner might not be initialized
+            return Double.NaN;   // never runs, but Java needs it, or it says Nu_inner might not be initialized
         }
         // calculate Nu according to the flow regime for the Annular pipe
         double Nu_annular;
         if (Re_annular <= 2300) {
-            Nu_annular = Exchanger_Correlations.Nu_annulus_laminar(alpha);
+            Nu_annular = Nu_annulus_laminar(alpha);
         } else if (Re_annular >= 10000) {
-            double Re_a_star = Exchanger_Correlations.Re_a_star(Re_annular, alpha);
-            double f_a = Exchanger_Correlations.f_a_annulus(Re_a_star);
-            double k1 = Exchanger_Correlations.k1_annulus(Re_annular, Pr_annular);
-            double f_length = Exchanger_Correlations.f_length(this.geometry.d_Ha(), this.geometry.lStraightTotal());
-            double f_geom = Exchanger_Correlations.f_geom(alpha);
-            Nu_annular = Exchanger_Correlations.Nu_annulus_turbulent(f_a, Re_annular, Pr_annular, k1, f_length, f_geom);
+            double Re_a_star = Re_a_star(Re_annular, alpha);
+            double f_a = f_a_annulus(Re_a_star);
+            double k1 = k1_annulus(Re_annular, Pr_annular);
+            double f_length = f_length(this.geometry.d_Ha(), this.geometry.lStraightTotal());
+            double f_geom = f_geom(alpha);
+            Nu_annular = Nu_annulus_turbulent(f_a, Re_annular, Pr_annular, k1, f_length, f_geom);
         } else {
             System.out.println("Error: annular flow is in the transition regime (Re = " + Re_annular + ")");
             System.exit(0);
@@ -151,16 +235,34 @@ public class Complete_Exchanger {
     //                                    Pressure Drop Calculation
     //========================================================================================================
 
+    public static double f_d_turbulent(double Re, double eps_r, double d){
+        return Math.pow(-1.8 * Math.log10(Math.pow(eps_r / (3.7 * d), 1.11) + 6.9 / Re), -2); }
+
+
+    public static double f_d_inner_laminar(double Re){
+        return 64 / Re; }
+
+    public static double f_d_annulus_laminar(double Re, double alpha){
+        return (64 / Re) * Math.pow(1 - alpha, 2)
+                / (1 + Math.pow(alpha, 2) + (1 - Math.pow(alpha, 2)) / Math.log(alpha)); }
+
+    public static double k_total(int n){
+        return 1.5 * (1 + n) + 2 * Math.max(0, n - 1); }
+
+    public static double delta_P(double f_d, double L, double d, double k_total, double rho, double v){
+        return (f_d * (L / d) + k_total) * rho * Math.pow(v, 2) / 2; }
+
+
     public double[] calculate_P(){
         double[] del_P = new double[2];
-        double k_total = Exchanger_Correlations.k_total(this.geometry.getN());
+        double k_total = k_total(this.geometry.getN());
         double L = this.geometry.lStraightTotal();
         // calculate pressure drop for the inner tube first
         double f_d_inner;
         if (Re_inner <= 2300) {                     // determine flow regime, if laminar
-            f_d_inner = Exchanger_Correlations.f_d_inner_laminar(Re_inner);
+            f_d_inner = f_d_inner_laminar(Re_inner);
         } else if (Re_inner >= 10000) {             // determine flow regime, if turbulent
-            f_d_inner = Exchanger_Correlations.f_d_turbulent(Re_inner, this.geometry.getEps_r(), this.geometry.getdInner_In());
+            f_d_inner = f_d_turbulent(Re_inner, this.geometry.getEps_r(), this.geometry.getdInner_In());
         } else {                                    // reject any transition flow regime
             System.out.println("Error: inner flow is in the transition regime (Re = " + Re_inner + ")");
             System.exit(0);
@@ -169,19 +271,21 @@ public class Complete_Exchanger {
         // calculate pressure drop for the annular tube next
         double f_d_annular;
         if (Re_annular <= 2300) {                   // determine flow regime, if laminar
-            f_d_annular = Exchanger_Correlations.f_d_annulus_laminar(Re_annular, alpha);
+            f_d_annular = f_d_annulus_laminar(Re_annular, alpha);
         } else if (Re_annular >= 10000) {           // determine flow regime, if turbulent
-            f_d_annular = Exchanger_Correlations.f_d_turbulent(Re_annular, this.geometry.getEps_r(), this.geometry.d_Ha());
+            f_d_annular = f_d_turbulent(Re_annular, this.geometry.getEps_r(), this.geometry.d_Ha());
         } else {                                    // reject any transition flow regime
             System.out.println("Error: annular flow is in the transition regime (Re = " + Re_annular + ")");
             System.exit(0);
             return null;
         }
         // format outputs and return the array of doubles, inner tube pressure drop at [0] and annular tube pressure drop  at [1]
-        del_P[0] = Exchanger_Correlations.delta_P(f_d_inner,   L, this.geometry.getdInner_In(), k_total, this.Inner_Fluid.getRho(),   v_inner);
-        del_P[1] = Exchanger_Correlations.delta_P(f_d_annular, L, this.geometry.d_Ha(),         k_total, this.Annular_Fluid.getRho(), v_annular);
+        del_P[0] = delta_P(f_d_inner,   L, this.geometry.getdInner_In(), k_total, this.Inner_Fluid.getRho(),   v_inner);
+        del_P[1] = delta_P(f_d_annular, L, this.geometry.d_Ha(),         k_total, this.Annular_Fluid.getRho(), v_annular);
         return del_P;
     }
+
+
 
 
 }
