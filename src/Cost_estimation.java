@@ -8,14 +8,12 @@ public class Cost_estimation {
     private double c_pump_inner;                        // annual pumping costs - process stream ($/Yr)
     private double c_pump_annular;                      // annual pumping costs - hot water stream($/Yr)
     private double c_capital_annual;                    // annualised capital costs ($/Yr)
-    private double c_module;                            // installed cost of one module in $
+    private double c_module = 11000;                            // installed cost of one module in $
 
     // constructor method
-    public Cost_estimation (Complete_Exchanger exchanger, double c_module){
+    public Cost_estimation (Complete_Exchanger exchanger){
         if (exchanger == null) System.exit(0);
-        if (c_module < 0) System.exit(0);
         this.exchanger = new Complete_Exchanger(exchanger); // copy constructor of the exchanger that we pass in to create the cost_estimation object
-        this.c_module = c_module;
         this.calculate();
     }
 

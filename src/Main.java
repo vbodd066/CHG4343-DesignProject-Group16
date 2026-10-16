@@ -33,7 +33,7 @@ public class Main {
 
         // Create out exchanger for the desired base case
         Complete_Exchanger baseCase = new Complete_Exchanger(exchanger1,process,hotWater);
-        Cost_estimation price_baseCase = new Cost_estimation(baseCase, 1000);
+        Cost_estimation price_baseCase = new Cost_estimation(baseCase);
 
         // Calculate Heat Transfer rate
         double q = baseCase.calculate_q(process,hotWater);
