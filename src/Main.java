@@ -33,7 +33,7 @@ public class Main {
 
         // Create out exchanger for the desired base case
         Complete_Exchanger baseCase = new Complete_Exchanger(exchanger1,process,hotWater);
-        Cost_estimation price_baseCase = new Cost_estimation(baseCase);
+        Cost_Estimation price_baseCase = new Cost_Estimation(baseCase);
 
         // Calculate Heat Transfer rate
         double q = baseCase.calculate_q(process,hotWater);
@@ -55,7 +55,7 @@ public class Main {
         System.out.println("The Annular stream: " + df_simple.format(del_P[1]) + " (Pa)");
 
         // Calculate the costs
-        double cost = price_baseCase.c_annual();
+        double cost = price_baseCase.calculateC_annual();
         System.out.println("====================================================================");
         System.out.println(" Base Case: total annual cost is: " + df.format(cost) + " ($ CAD)");
 
